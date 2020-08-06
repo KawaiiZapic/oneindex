@@ -150,7 +150,10 @@ class fetch {
 				$key = (string) $done['handle'];
 
 				list($k, $callback) = $map[$key];
-
+				/*if($execrun != CURLM_OK){
+					$responses[$k] = false;
+					break 2;
+				}*/
 				// get the info and content returned on the request
 				$raw = curl_multi_getcontent($done['handle']);
 				$response = self::response($raw, $done['handle']);

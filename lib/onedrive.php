@@ -54,11 +54,11 @@
 			if($token['expires_on'] > time()+600){
 				return $token['access_token'];
 			}else{
-            			if (empty($token) || empty($token['refresh_token'])) {
-                			$refresh_token = config('refresh_token');
-            			} else {
-                			$refresh_token = $token['refresh_token'];
-            			}
+				if (empty($token) || empty($token['refresh_token'])) {
+                	$refresh_token = config('refresh_token');
+            	} else {
+                	$refresh_token = $token['refresh_token'];
+            	}
 				$token = self::get_token($refresh_token);
 				if(!empty($token['refresh_token'])){
 					$token['expires_on'] = time()+ $token['expires_in'];
@@ -82,10 +82,10 @@
 
 		
 		//返回目录信息
-		static function dir($path="/"){
+		static function dir($path="/",$retry=3){
 			$request = self::request($path, "children?select=name,size,folder,@microsoft.graph.downloadUrl,lastModifiedDateTime");
 			$items = array();
-			self::dir_next_page($request, $items);
+			self::dir_next_page($request, $items,0,$retry);
 			//不在列表显示的文件夹
 			$hide_list = explode(PHP_EOL,config('onedrive_hide'));
 			if(is_array($hide_list) && count($hide_list)>0){
@@ -100,15 +100,16 @@
 		}
 
 		//通过分页获取页面所有item
-		static function dir_next_page($request, &$items, $retry=0){
+		static function dir_next_page($request, &$items, $retry=0,$max_retry=3){
 			$resp = fetch::get($request);
 			
 			$data = json_decode($resp->content, true);
-			if(empty($data) && $retry < 3){
+			if(empty($data) && $retry < $max_retry){
 				$retry += 1;
-				return self::dir_next_page($request, $items, $retry);
+				echo php_sapi_name() == "cli" ? "Retry {$retry} / {$max_retry}... " : '';
+				return self::dir_next_page($request, $items, $retry,$max_retry);
 			}
-			
+		echo php_sapi_name() == "cli" ? count($data['value'])." item(s)... " : '';
 			foreach((array)$data['value'] as $item){
 				//var_dump($item);
 				$items[$item['name']] = array(
@@ -123,7 +124,7 @@
 			if(!empty($data['@odata.nextLink'])){
 				$request = self::request();
 				$request['url'] = $data['@odata.nextLink'];
-				return self::dir_next_page($request, $items);
+				return self::dir_next_page($request, $items,0,$max_retry);
 			}
 		}
 

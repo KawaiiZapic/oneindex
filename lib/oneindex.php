@@ -13,12 +13,15 @@
 		static function refresh_cache($path){
 			set_time_limit(0);
 			if( php_sapi_name() == "cli" ){
-			   echo $path.PHP_EOL;
+			   echo $path."... ";
 			}
-			$items = onedrive::dir($path);
+			$items = onedrive::dir($path,PHP_INT_MAX);
 			if(is_array($items)){
+
+				echo  php_sapi_name() == "cli" ? "Total: " . count($items)." item(s)".PHP_EOL : "";
 				cache::set('dir_'.$path, $items, config('cache_expire_time') );
 			}
+			var_dump($items);
 			foreach((array)$items as $item){
 			    if($item['folder']){
 			        self::refresh_cache($path.$item['name'].'/');

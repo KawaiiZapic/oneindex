@@ -113,7 +113,7 @@ class IndexController{
 			//不在列表中展示
 			unset($this->items['HEAD.md']);
 		}
-		return view::load('list')->with('title', 'index of '. urldecode($this->url_path))
+		return view::load('list')->with('title', 'Index of '. urldecode($this->url_path))
 					->with('navs', $navs)
 					->with('path',join("/", array_map("rawurlencode", explode("/", $this->url_path)))  )
 					->with('root', $root)

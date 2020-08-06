@@ -29,48 +29,49 @@ function file_ico($item){
 <div class="mdui-row">
 	<ul class="mdui-list">
 		<li class="mdui-list-item th">
-		  <div class="mdui-col-xs-12 mdui-col-sm-7">文件 <i class="mdui-icon material-icons icon-sort" data-sort="name" data-order="downward">expand_more</i></div>
-		  <div class="mdui-col-sm-3 mdui-text-right">修改时间 <i class="mdui-icon material-icons icon-sort" data-sort="date" data-order="downward">expand_more</i></div>
-		  <div class="mdui-col-sm-2 mdui-text-right">大小 <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i></div>
+		  <div class="mdui-col-xs-9 mdui-col-sm-7">文件 <i class="mdui-icon material-icons icon-sort" data-sort="name" data-order="downward">expand_more</i></div>
+		  <div class="mdui-hidden-xs-down mdui-col-sm-3 mdui-text-right">修改时间 <i class="mdui-icon material-icons icon-sort" data-sort="date" data-order="downward">expand_more</i></div>
+		  <div class="mdui-col-xs-3 mdui-col-sm-2 mdui-text-right">大小 <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i></div>
 		</li>
 		<?php if($path != '/'):?>
 		<li class="mdui-list-item mdui-ripple">
 			<a href="<?php echo get_absolute_path($root.$path.'../');?>">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7">
+			  <div class="mdui-col-xs-3">
 				<i class="mdui-icon material-icons">arrow_upward</i>
 		    	..
 			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"></div>
+			  <div id="fsize" class="mdui-col-xs-9 mdui-text-right"></div>
 		  	</a>
 		</li>
 		<?php endif;?>
 
-		<?php foreach((array)$items as $item):?>
+		<?php $total_size=0;foreach((array)$items as $item):?>
+
 			<?php if(!empty($item['folder'])):?>
 
 		<li class="mdui-list-item mdui-ripple" data-sort data-sort-name="<?php e($item['name']);?>" data-sort-date="<?php echo $item['lastModifiedDateTime'];?>" data-sort-size="<?php echo $item['size'];?>">
 			<a href="<?php echo get_absolute_path($root.$path.rawurlencode($item['name']));?>">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
+			  <div class="mdui-col-xs-9 mdui-col-sm-7 mdui-text-truncate">
 				<i class="mdui-icon material-icons">folder_open</i>
 		    	<?php e($item['name']);?>
 			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
+			  <div class="mdui-hidden-xs-down mdui-col-sm-3 mdui-text-right" style="white-space:nowrap;"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
+			  <div class="mdui-col-xs-3 mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
 		  	</a>
 		</li>
 			<?php else:?>
 		<li class="mdui-list-item file mdui-ripple" data-sort data-sort-name="<?php e($item['name']);?>" data-sort-date="<?php echo $item['lastModifiedDateTime'];?>" data-sort-size="<?php echo $item['size'];?>">
 			<a href="<?php echo get_absolute_path($root.$path).rawurlencode($item['name']);?>" target="_blank">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
+			  <div class="mdui-col-xs-9 mdui-col-sm-7 mdui-text-truncate">
 				<i class="mdui-icon material-icons"><?php echo file_ico($item);?></i>
 		    	<?php e($item['name']);?>
 			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
+			  <div class="mdui-hidden-xs-down mdui-col-sm-3 mdui-text-right" style="white-space:nowrap;"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
+			  <div class="mdui-col-xs-3 mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
 		  	</a>
 		</li>
 			<?php endif;?>
+<?php $total_size += $item['size'];?>
 		<?php endforeach;?>
 	</ul>
 </div>
@@ -86,7 +87,7 @@ function file_ico($item){
 </div>
 <script>
 $ = mdui.JQ;
-
+$("#fsize").html("<?php echo count($items)." 个项目, 共 ".onedrive::human_filesize($total_size);?>");
 $.fn.extend({
     sortElements: function (comparator, getSortable) {
         getSortable = getSortable || function () { return this; };
@@ -113,11 +114,11 @@ $.fn.extend({
 
 $(function () {
     $('.file a').each(function () {
-        $(this).on('click', function () {
-            var form = $('<form target=_blank method=post></form>').attr('action', $(this).attr('href')).get(0);
-            $(document.body).append(form);
-            form.submit();
-            $(form).remove();
+	    $(this).on('click', function (e) {
+            var form = $('<form id="jump" target=_blank method=post></form>').attr('action', $(this).attr('href')).get(0);
+	    $(document.body).append(form);
+		    form.submit();
+		    $(form).remove();
             return false;
         });
     });
