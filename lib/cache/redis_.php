@@ -29,6 +29,6 @@ class redis_{
         }
 
         function clear(){
-                $this->redis->set("OneIndex_gRefreshTime", $gRefreshTime);
+                $this->redis->set("OneIndex_gRefreshTime");
         }
 }

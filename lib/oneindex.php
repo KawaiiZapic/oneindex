@@ -11,17 +11,14 @@
 
 		// 刷新缓存
 		static function refresh_cache($path){
-			set_time_limit(0);
 			if( php_sapi_name() == "cli" ){
 			   echo $path."... ";
 			}
 			$items = onedrive::dir($path,PHP_INT_MAX);
 			if(is_array($items)){
-
 				echo  php_sapi_name() == "cli" ? "Total: " . count($items)." item(s)".PHP_EOL : "";
 				cache::set('dir_'.$path, $items, config('cache_expire_time') );
 			}
-			var_dump($items);
 			foreach((array)$items as $item){
 			    if($item['folder']){
 			        self::refresh_cache($path.$item['name'].'/');
@@ -98,10 +95,11 @@
 		//获取下载链接
 		static function download_url($path){
 			$item = self::file($path);
-			if(!empty($item['downloadUrl'])){
+			if(!empty($item['downloadUrl']) && $item['expires_on'] > time()){
 				return $item['downloadUrl'];
 			}
-			return false;
+			$link = onedrive::download_url(self::get_absolute_path($path));
+			return $link ? $link : false;
 		}
 
 		static function web_url($path){

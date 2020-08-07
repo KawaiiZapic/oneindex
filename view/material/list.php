@@ -40,12 +40,19 @@ function file_ico($item){
 				<i class="mdui-icon material-icons">arrow_upward</i>
 		    	..
 			  </div>
-			  <div id="fsize" class="mdui-col-xs-9 mdui-text-right"></div>
+			  <div id="fsize" class="mdui-col-xs-9 mdui-text-right"><?php
+				  $total_size=0;
+				  foreach ($items as $item){
+				      $total_size += $item['size'];
+                  }
+				  $total_size += $item['size'];
+                  echo count($items)." 个项目, 共 ".onedrive::human_filesize($total_size);
+                  ?></div>
 		  	</a>
 		</li>
 		<?php endif;?>
 
-		<?php $total_size=0;foreach((array)$items as $item):?>
+		<?php foreach((array)$items as $item):?>
 
 			<?php if(!empty($item['folder'])):?>
 
@@ -71,7 +78,6 @@ function file_ico($item){
 		  	</a>
 		</li>
 			<?php endif;?>
-<?php $total_size += $item['size'];?>
 		<?php endforeach;?>
 	</ul>
 </div>
@@ -87,7 +93,6 @@ function file_ico($item){
 </div>
 <script>
 $ = mdui.JQ;
-$("#fsize").html("<?php echo count($items)." 个项目, 共 ".onedrive::human_filesize($total_size);?>");
 $.fn.extend({
     sortElements: function (comparator, getSortable) {
         getSortable = getSortable || function () { return this; };

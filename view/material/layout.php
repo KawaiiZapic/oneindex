@@ -84,7 +84,7 @@
 var p = new Pjax({elements:[".mdui-list-item:not(.file) a","#path a[href]"],selectors:["#path","title","#content"],cacheBust:false});
 $(document).on("pjax:send",function(){
 	$(".load-face").remove();
-                $("#content").after('<div class="load-face mdui-valign" style="pointer-events:none;height:100vh;position:fixed;top:0;left:0;width:100vw;opacity:0;"><div style="width:20vw;height:20vw;max-width:64px;max-height:64px;" class="mdui-center mdui-spinner"</div></div>');
+                $("#content").after('<div class="load-face mdui-valign" style="pointer-events:none;height:100vh;position:fixed;top:0;left:0;width:100vw;opacity:0;"><div style="width:20vw;height:20vw;max-width:64px;max-height:64px;" class="mdui-center mdui-spinner"></div></div>');
                 setTimeout(function(){
                         $("#content").css("opacity","0").css("pointer-events","none");
                         $(".load-face").css("opacity","1");

@@ -123,9 +123,7 @@ class secache{
         return $this->_format(true);
     }
     function fetch($key,&$return){
-        if($this->lock(false)){
-            $locked = true;
-        }
+        $locked = $this->lock(false) ?true : false;
         if($this->search($key,$offset)){
             $info = $this->_get_node($offset);
             $schema_id = $this->_get_size_schema_id($info['size']);

@@ -76,7 +76,7 @@ class IndexController{
 		}elseif($_SERVER['REQUEST_METHOD'] == 'POST' || !is_null($_GET['s']) ){
 			return $this->show($item);
 		}else{//返回下载链接
-			$url = $item['downloadUrl'];
+			$url = oneindex::download_url($this->path.$this->name);;
 		}
 		header('Location: '.$url);
 	}
@@ -128,6 +128,7 @@ class IndexController{
 		$data['title'] = $item['name'];
 		$data['navs'] = $this->navs();
 		$data['item'] = $item;
+		$data['item']['downloadUrl'] = oneindex::download_url($this->path.$this->name);
 		$data['ext'] = $ext;
 		$data['item']['path'] = get_absolute_path($this->path).$this->name;
 		$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
