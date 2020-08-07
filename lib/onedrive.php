@@ -246,7 +246,7 @@ class onedrive {
 	
 	static function urlencode($path) {
 		foreach (explode('/', $path) as $k => $v) {
-			if (empty(!$v)) {
+			if (empty(!$v) || $v === "0") {
 				$paths[] = rawurlencode($v);
 			}
 		}
